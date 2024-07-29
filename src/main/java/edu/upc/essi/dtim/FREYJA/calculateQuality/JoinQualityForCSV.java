@@ -1,4 +1,4 @@
-package edu.upc.essi.dtim.NextiaJD.calculateQuality;
+package edu.upc.essi.dtim.FREYJA.calculateQuality;
 
 import java.nio.file.Paths;
 import java.sql.Connection;
@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import static edu.upc.essi.dtim.NextiaJD.utils.Utils.preprocessing;
+import static edu.upc.essi.dtim.FREYJA.utils.Utils.preprocessing;
 
 public class JoinQualityForCSV {
     Connection conn;

@@ -1,6 +1,6 @@
-package edu.upc.essi.dtim.NextiaJD.predictQuality;
+package edu.upc.essi.dtim.FREYJA.predictQuality;
 
-import edu.upc.essi.dtim.NextiaJD.utils.DuckDB;
+import edu.upc.essi.dtim.FREYJA.utils.DuckDB;
 import org.json.simple.JSONArray;
 
 import java.io.BufferedWriter;
@@ -16,8 +16,8 @@ import java.nio.charset.*;
 import java.io.IOException;
 import java.util.List;
 
-import static edu.upc.essi.dtim.NextiaJD.predictQuality.FeatureGeneration.*;
-import static edu.upc.essi.dtim.NextiaJD.utils.Utils.*;
+import static edu.upc.essi.dtim.FREYJA.predictQuality.FeatureGeneration.*;
+import static edu.upc.essi.dtim.FREYJA.utils.Utils.*;
 
 public class Profile {
     Connection conn;

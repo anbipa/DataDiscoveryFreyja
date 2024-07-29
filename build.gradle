@@ -36,7 +36,7 @@ dependencies {
 shadowJar {
     zip64(true)
     manifest {
-        attributes 'Main-Class': 'edu.upc.essi.dtim.NextiaJD.Main'
+        attributes 'Main-Class': 'edu.upc.essi.dtim.FREYJA.Main'
     }
 }
 

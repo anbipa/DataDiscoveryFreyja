@@ -1,4 +1,4 @@
-package edu.upc.essi.dtim.NextiaJD.calculateQuality;
+package edu.upc.essi.dtim.FREYJA.calculateQuality;
 
 public class JoinQuality {
     double l; // Levels to the discrete quality

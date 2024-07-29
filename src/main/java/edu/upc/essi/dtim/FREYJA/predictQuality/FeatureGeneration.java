@@ -1,4 +1,4 @@
-package edu.upc.essi.dtim.NextiaJD.predictQuality;
+package edu.upc.essi.dtim.FREYJA.predictQuality;
 
 import org.apache.commons.codec.language.Soundex;
 
@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import static edu.upc.essi.dtim.NextiaJD.utils.Utils.getNumberOfValues;
+import static edu.upc.essi.dtim.FREYJA.utils.Utils.getNumberOfValues;
 
 public class FeatureGeneration {
 

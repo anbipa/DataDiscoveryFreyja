@@ -1,4 +1,4 @@
-package edu.upc.essi.dtim.NextiaJD.calculateQuality;
+package edu.upc.essi.dtim.FREYJA.calculateQuality;
 
 import org.apache.commons.math3.special.Erf;
 

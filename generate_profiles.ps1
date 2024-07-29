@@ -1,6 +1,6 @@
 # Specify the directory path
-$directoryBenchmark = "C:\Projects\benchmarks\santos_small\datalake"
-$directoryStoreProfiles = "C:\Projects\ProJoin\profiles"
+$directoryBenchmark = "path\to\benchmark"
+$directoryStoreProfiles = "path\to\store\profiles"
 
 $files = Get-ChildItem -Path $directoryBenchmark -File
 
@@ -13,18 +13,18 @@ if (-not (Test-Path -Path $directoryStoreProfiles)) {
 # Define the script block to be executed in parallel
 $block = {
     Param([string] $file, [string] $directoryStoreProfiles)
-    & "C:\Java\jdk-21.0.1\bin\java.exe" -jar "C:\Projects\ProJoin\ProJoin\build\libs\ProJoin-all.jar" "createProfile" $file $directoryStoreProfiles
+    & "C:\Java\jdk-21.0.1\bin\java.exe" -jar "path\to\FREYJA-all.jar" "createProfile" $file $directoryStoreProfiles
 }
 
 # Measure the time taken to execute the loop
-$executionTime1 = Measure-Command {
+$executionTime = Measure-Command {
     #Remove all jobs
     Get-Job | Remove-Job
 
     # Define the maximum number of concurrent jobs
     $MaxThreads = 8
 
-    # Start the jobs. Max 4 jobs running simultaneously.
+    # Start the jobs. Max 8 jobs running simultaneously.
     for ($i = 0; $i -lt $files.Count; $i++) {
         While ($(Get-Job -state running).count -ge $MaxThreads){
             Start-Sleep -Milliseconds 10
@@ -42,4 +42,4 @@ $executionTime1 = Measure-Command {
     Get-Job | Remove-Job
 }
 
-Write-Host "Loop execution time: $($executionTime1.TotalSeconds) seconds"
+Write-Host "Loop execution time: $($executionTime.TotalSeconds) seconds"

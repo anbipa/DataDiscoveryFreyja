@@ -1,12 +1,12 @@
-package edu.upc.essi.dtim.NextiaJD;
+package edu.upc.essi.dtim.FREYJA;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
-import edu.upc.essi.dtim.NextiaJD.predictQuality.PredictQuality;
-import edu.upc.essi.dtim.NextiaJD.predictQuality.Profile;
-import edu.upc.essi.dtim.NextiaJD.utils.DuckDB;
+import edu.upc.essi.dtim.FREYJA.predictQuality.PredictQuality;
+import edu.upc.essi.dtim.FREYJA.predictQuality.Profile;
+import edu.upc.essi.dtim.FREYJA.utils.DuckDB;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.FileReader;

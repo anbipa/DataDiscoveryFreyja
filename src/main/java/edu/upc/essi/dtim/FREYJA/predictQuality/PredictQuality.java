@@ -1,4 +1,4 @@
-package edu.upc.essi.dtim.NextiaJD.predictQuality;
+package edu.upc.essi.dtim.FREYJA.predictQuality;
 
 import org.apache.commons.text.similarity.LevenshteinDistance;
 
@@ -11,7 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static edu.upc.essi.dtim.NextiaJD.utils.Utils.readCSVFile;
+import static edu.upc.essi.dtim.FREYJA.utils.Utils.readCSVFile;
 
 public class PredictQuality {
     LinkedList<String> metricsToNormalize = new LinkedList<>(Arrays.asList(

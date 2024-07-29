@@ -6,7 +6,7 @@ The data included in this folder presents the following characteristics:
 - D3L:
 	- Link: https://github.com/alex-bogatu/DataSpiders
 	- **Sample** of 100 query columns, with k >= 100
-- Nextia
+- FREYJA
 	- Link: ------------------------------
 	- 50 query columns, with k >= 10
 - Santos Small

@@ -1,9 +1,7 @@
-package edu.upc.essi.dtim.NextiaJD.utils;
+package edu.upc.essi.dtim.FREYJA.utils;
 
 import org.apache.commons.io.FilenameUtils;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import java.io.*;
 import java.nio.file.Paths;

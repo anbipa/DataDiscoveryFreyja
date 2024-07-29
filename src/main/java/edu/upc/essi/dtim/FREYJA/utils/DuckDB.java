@@ -1,4 +1,4 @@
-package edu.upc.essi.dtim.NextiaJD.utils;
+package edu.upc.essi.dtim.FREYJA.utils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
