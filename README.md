@@ -69,7 +69,7 @@ java -jar FREYJA-all.jar computeDistances query_dataset.csv query_column path\to
 This will generate another CSV file, where each row represents the differences between the metrics of the profiles of the _query_column_ and another column in the benchmark. 
 
 #### Automated function
-Once again, the task of generating distances one by one is, first, loathsome and, second, easily parallelizable (in this case, without the need for a external script). To facilitate the obtention of distances for a given benchmark we have defined another function in the JAR: _computeDistancesForBenchmark_. **The correct execution of this function requires a ground truth**, as the set of candidate queries will be extracted from it. 
+Once again, the task of generating distances one by one is, first, loathsome and, second, easily parallelizable (in this case, without the need for an external script). To facilitate the obtention of distances for a given benchmark we have defined another function in the JAR: _computeDistancesForBenchmark_. **The correct execution of this function requires a ground truth**, as the set of candidate queries will be extracted from it. 
 
 This function can take either three of five additional parameters. This depends on the format of the ground truth used. If the ground truth contains the columns _target_ds_ and _target_attr_ to represent the query dataset and the query attribute, then only three additional parameters are needed. Ground truths from popular benchmarks can be found in the [ground_truths](./ground_truths) folder, with modified headers to fit the abovementioned format. 
 
@@ -90,7 +90,7 @@ java -jar FREYJA-all.jar computeDistancesForBenchmark path\to\ground_truth.csv h
 ### 3. Predictive model
 The last step is to execute the predictive model, which generates a score for each potential join in the data lake. This represents the predicted quality of the join, with high scores indicating a higher chance of a significant join than lower scores. The set of potential joins can be sorted based on the scores, indicating at the top of the ranking those matches that have the highest potential of being joins.
 
-This model is contained in the [model](.model) folder (_predictive_model.pkl_). The easiest way to execute the model and obtain a ranking is via the _get_ranking.py_ script. The code requires the following parameters:
+This model is contained in the [model](./model) folder (_predictive_model.pkl_). The easiest way to execute the model and obtain a ranking is via the _get_ranking.py_ script. The code requires the following parameters:
 - _distance_folder_path_: path to the distances' folder.
 - _k_: size of the ranking to be generated.
 - _dataset_: name of the query dataset.
@@ -104,10 +104,18 @@ python get_ranking.py
 #### Test performance on benchmarks
 To facilitate the computation of evaluation metrics of our system, we have developed another script, which calculates the Precision@k, Recall@k, MaxRecall@k (i.e. maximum possible value of the recall given the characteristics of the benchmark) RecallPercentage@k (i.e. Recall@k / MaxRecall@k) and MAP@k. The code can be found in the _evaluate_benchmark_performance.py_ script.
 
-Similarly as to the _get_ranking.py_ script, it is necessary to introduce the path to the distances folder, the desired k and the model as parameters. However, it is also required to define the path to the ground truth of the benchmark (as it will be used to extract all the query columns) and the _step_, which indicates which are the evaluation points. For instance, given k = 20, we might want to evaluate the scores for every two increments of k (k = 2, k = 4, ..., k = 20). In this case _step_ would be 2.
+Similarly as in the _get_ranking.py_ script, it is necessary to introduce the path to the distances folder, the desired k and the model as parameters. However, it is also required to define the path to the ground truth of the benchmark (as it will be used to extract all the query columns) and the _step_, which indicates which are the evaluation points. For instance, given k = 20, we might want to evaluate the scores for every two increments of k (k = 2, k = 4, ..., k = 20). In this case _step_ would be 2.
 
 The script can be executed in the following manner:
 ```
 python evaluate_benchmark_performance.py
 ```
 This will output the abovementioned metrics for the defined benchmark.
+
+## Including new features
+
+To extend the set of features beyond the ones initially defined it is necessary to take the following steps:
+- Generate a new function in the [FeatureGeneration.java](./src/main/java/edu/upc/essi/dtim/FREYJA/predictQuality/FeatureGeneration.java) class, with the SQL query to extract the desired metric(s) from the data stored in the temporal DuckDB database. Create a _features_ map and include all metrics obtained from the query.
+- Call this newly defined function in the [Profile.java](./src/main/java/edu/upc/essi/dtim/FREYJA/predictQuality/Profile.java) class, including the new features in the _columnFeatures_ variable.
+- In the [PredictQuality.java](./src/main/java/edu/upc/essi/dtim/FREYJA/predictQuality/PredictQuality.java) file define is the new metric(s) need(s) to be normalized (if so, add to the list of _metricsToNormalize_) and which can of distance pattern needs to be applied (that is, how do we measure the difference between a given metrics from two profiles). For the latter, most features just take the absolute difference (pattern = 0), although there are also implemented the containment between two sets (pattern = 1), the levenshtein distance between two arrays (pattern = 3) and just including both values from the two profiles (pattern = 2). Define so in the _distancePattern_ variable
+- Modify the ending of the _calculateDistances_ function in [PredictQuality.java](./src/main/java/edu/upc/essi/dtim/FREYJA/predictQuality/PredictQuality.java), so that it resets the set of distances if the number of features generated does not match the total (which should be the original 39 + the amount of need features).
