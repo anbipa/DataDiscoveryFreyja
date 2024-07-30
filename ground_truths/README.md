@@ -7,7 +7,7 @@ The data included in this folder presents the following characteristics:
 	- Link: https://github.com/alex-bogatu/DataSpiders
 	- **Sample** of 100 query columns, with k >= 100
 - FREYJA
-	- Link: ------------------------------
+	- Link: https://mydisk.cs.upc.edu/s/QHJbKcyeacxq35f
 	- 50 query columns, with k >= 10
 - Santos Small
 	- Link: https://zenodo.org/records/7758091 (santos_benchmark.zip)
