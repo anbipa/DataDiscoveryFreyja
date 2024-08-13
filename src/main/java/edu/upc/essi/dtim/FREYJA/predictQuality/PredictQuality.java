@@ -10,10 +10,12 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static edu.upc.essi.dtim.FREYJA.utils.Utils.readCSVFile;
 
 public class PredictQuality {
+    private static final ReentrantLock lock = new ReentrantLock();
     LinkedList<String> metricsToNormalize = new LinkedList<>(Arrays.asList(
             "cardinality", "entropy", "frequency_avg", "frequency_min", "frequency_max", "frequency_sd",
             "len_max_word", "len_min_word", "len_avg_word", "words_cnt_max", "words_cnt_min", "words_cnt_avg",
@@ -204,6 +206,7 @@ public class PredictQuality {
     public void calculateDistancesAttVsFolder(String dataset, String attribute, String profilesPath, String distancesPath, Boolean deleteSameDataset) {
         try {
             String datasetNameProfile = dataset.replace(".csv", "_profile.csv");
+            String datasetNameNoCSV = dataset.replace(".csv", "_profile");
 
             File[] files = Paths.get(profilesPath).toFile().listFiles(File::isFile);
             if (files == null) {
@@ -227,7 +230,7 @@ public class PredictQuality {
             String attributeNoConflicts = attribute.replace("/", "_").replace(": ","_");
 
             // Write header of the distances
-            String queryDistancesPath = String.valueOf(Paths.get(String.valueOf(distancesFolder), String.format("distances_%s_%s.csv", dataset, attributeNoConflicts)));
+            String queryDistancesPath = String.valueOf(Paths.get(String.valueOf(distancesFolder), String.format("distances_%s_%s.csv", datasetNameNoCSV, attributeNoConflicts)));
             writeHeader(queryDistancesPath, queryProfile);
 
             // Do not create distances with the same dataset that contains the query column (if needed)
@@ -248,7 +251,12 @@ public class PredictQuality {
                         if (!distances.isEmpty()) {
                             try {
                                 // Conflicting characters are removed from attribute the name. These transformations are taken into account when executing the model
-                                writeDistances(queryDistancesPath, distances);
+                                lock.lock();
+                                try {
+                                    writeDistances(queryDistancesPath, distances);
+                                } finally {
+                                    lock.unlock();
+                                }
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }
