@@ -46,8 +46,7 @@ public class Utils {
         try {
             String fileName = Paths.get(path).getFileName().toString();
             String fileNameWithOutExt = FilenameUtils.removeExtension(fileName);
-            String profileFileName = pathToStoreProfile + "\\" + fileNameWithOutExt + "_profile.csv";
-
+            String profileFileName = Paths.get(pathToStoreProfile, fileNameWithOutExt + "_profile.csv").toString();
             FileWriter csvWriter = new FileWriter(profileFileName);
 
             // Write header

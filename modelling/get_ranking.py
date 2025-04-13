@@ -1,6 +1,7 @@
 import joblib
 import sklearn 
 import pandas as pd
+import argparse
 
 def prepare_data_for_model(distances, model):
   distances = distances.drop(columns=['dataset_name', 'dataset_name_2', 'attribute_name', 'attribute_name_2'], axis=1) # Remove unnecesary columns
@@ -26,10 +27,14 @@ def get_ranking(distances_folder_path, k, dataset, attribute, model):
   top_k_joins = distances.sort_values(by='predictions', ascending=False).head(k)
   print(top_k_joins.head(k))
 
-distances_folder_path = 'path/to/distances/' # Include the final "/"
-k = 20
-dataset = "dataset.csv"
-attribute = "attribute"
-model = joblib.load('predictive_model.pkl')
+if __name__ == "__main__":
+  parser = argparse.ArgumentParser(description="Ranking script for joinability prediction")
+  parser.add_argument("distances_folder", type=str, help="distances folder path")
+  parser.add_argument("dataset", type=str, help="query dataset name")
+  parser.add_argument("attribute", type=str, help="query attribute name")
+  parser.add_argument("k", type=int, help="Number of top joins to return")
 
-get_ranking(distances_folder_path, k, dataset, attribute, model)
+  args = parser.parse_args()
+
+  model = joblib.load("/app/predictive_model.pkl")
+  get_ranking(args.distances_folder, args.k, args.dataset, args.attribute, model)

@@ -26,3 +26,13 @@ replay_pid*
 build
 .gradle
 .idea
+
+# Python virtual environment
+venv/
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# MacOS
+.DS_Store

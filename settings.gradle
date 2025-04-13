@@ -1,0 +1,2 @@
+rootProject.name = 'datadiscovery'
+include 'profile_prepro'
