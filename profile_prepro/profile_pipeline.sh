@@ -55,5 +55,23 @@ end_time=$(date +%s)
 elapsed=$((end_time - start_time))
 echo "Loop execution time: $elapsed seconds"
 
+#!/bin/bash
 
-java -jar "$java_jar_path" computeDistancesForBenchmark "$ground_truth" "$directory_store_profiles" "$directory_store_distances"
+# Loop over all attributes in all profile files
+for query_file in "$directory_store_profiles"/*.csv; do
+    while IFS= read -r line; do
+        # Skip the header
+        if [[ "$line" == "val_pct_std"* ]]; then
+            continue
+        fi
+        # Extract attribute name and dataset name
+        dataset_name=$(echo "$line" | awk -F';' '{print $(NF-12)}')
+        attribute_name=$(echo "$line" | awk -F';' '{print $(NF-25)}' | tr -d '"')
+
+        echo "Computing distances for: $dataset_name - $attribute_name"
+        java -jar "$java_jar_path" computeDistances "$dataset_name" "$attribute_name" "$directory_store_profiles" "$directory_store_distances"
+    done < "$query_file"
+done
+
+
+#java -jar "$java_jar_path" computeDistances "dataset_name" "dataset_query_attr" "$directory_store_profiles" "$directory_store_distances"
