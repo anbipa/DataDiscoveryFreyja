@@ -84,7 +84,7 @@ This command mounts the benchmark, ground_truths, and output directories from yo
 #### Docker build
 To build the Docker image for the modelling part, run the following command in the [modelling](modelling) directory of the project:
 ```
-docker build -t modelling .
+docker build -t modelling ./modelling
 ```
 #### Docker run
 To run the Docker image for the modelling part, use the following command:
