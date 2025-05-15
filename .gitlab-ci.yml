@@ -1,0 +1,22 @@
+stages:
+  - build
+
+# Build module 1
+build_module1:
+  stage: build
+  script:
+    - docker build --no-cache -t profiles_prepro ./profile_prepro
+  tags:
+    - docker
+  only:
+    - main
+
+# Build module 2
+build_module2:
+  stage: build
+  script:
+    - docker build -t modelling ./modelling
+  tags:
+    - docker
+  only:
+    - main
