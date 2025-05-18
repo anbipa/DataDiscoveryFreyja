@@ -5,23 +5,27 @@ This is a tool used to perform data discovery in large-scale environments such a
 
 ## Deployment Requirements
 ### Enviroment Variables
-The application currently does not require any mandatory environment variables.
+If a MinIO server is running, the following environment variables need to be set:
+- **MINIO_ENDPOINT**: The endpoint of the MinIO server (e.g., `http://minio:9000`).
+- **MINIO_ACCESS_KEY**: The access key for the MinIO server (e.g., `minioadmin`).
+- **MINIO_SECRET_KEY**: The secret key for the MinIO server (e.g., `minioadmin123`).
+- **MINIO_BUCKET**: The name of the bucket to be used (e.g., `data-based-data-discovery`).
 
 ### Volumes & Persistent Storage
-In this initial version, our tool uses docker [bind mounts](https://docs.docker.com/engine/storage/bind-mounts/) to allow users to provide their input files and access outputs.
+This tool supports two modes of file access:
+(1) local volumes using Docker bind mounts, and
+(2) external storage access via MinIO (LTS).
+#### Option 1: Using Docker Volumes (Local)
+The tool uses docker [bind mounts](https://docs.docker.com/engine/storage/bind-mounts/) to allow users to provide their input files and access outputs.
 - **Input Volumes**:
   1. The benchmark input volume is mounted to the container's `/app/benchmark` directory. Users can place their input files in this directory.
-  2. The ground truth input volume is mounted to the container's `/app/ground_truths` directory. Users can place their ground truth files in this directory.
 - **Output Volume**: The output volume is mounted to the container's `/app/outputs` directory. The application will save its output files in this directory.
+#### Option 2: Using MinIO (LTS Integration)
+The tool also supports integration with Cyclops' Long-Term Storage (LTS) via a MinIO-compatible API. This mode does not require local mounts and supports fully remote workflows.
 
-In future versions, we plan to connect to the LTS external storage in Cyclops.
-
-The Data Discovery application does not require any persistent storage or volumes. In this initial version, the tool reads the input data from a input.csv file located in a local specified directory. Seamasly, The output file is saved in a specified output directory.
 ### Network Configuration
-The application does not require any specific network configuration. It runs locally and does not expose any ports.
-In the future, main may communicate with:
-1. (input) the LTS to retrieve the dataset to be scrutinized.
-2. (output) the IKB to annotate the discovered DC through a provided API.
+- In local volume mode, no special network setup is required.
+- In MinIO mode, the container must be connected to the Docker network that includes the MinIO instance (e.g., long-term-storage_default).
 
 
 ## Infrastructure Setup & Resource Allocation
@@ -53,6 +57,7 @@ CPU usage is high, but can increase/decrease depending on the benchmark size.
 │   ├── Dockerfile
 │   └── ...
 ├── requirements.txt
+├── dcoker-compose.yml
 ├── README.md
 ├── .gitattributes
 ├── Notebook - ML models.ipynb
@@ -115,6 +120,41 @@ docker run --rm \
   -e MINIO_SECRET_KEY=minioadmin123 \
   modelling world_country.csv Code 10
 ```
+
+### Docker Compose (Preprocessing + Modelling)
+
+You can also use Docker Compose to simplify building and running both modules: profile_prepro and modelling.
+
+#### Build All Services
+
+From the project root (where `docker-compose.yml` is located), run:
+
+```bash
+docker compose build
+```
+#### Run profile_prepro
+To execute the preprocessing pipeline (which creates data profiles and computes distances):
+```bash
+docker compose run --rm profile_prepro
+```
+This service is configured to fetch data from a MinIO bucket (e.g., data-based-data-discovery/benchmark) if environment variables are set and MinIO is reachable via the Docker network.
+
+#### Run modelling (with arguments)
+To generate a joinability ranking using the predictive model:
+
+```bash
+docker compose run --rm modelling world_country.csv Code 10
+```
+Here:
+- world_country.csv is the name of the query dataset (must match a profile/distances file)
+- Code is the attribute to rank
+- 10 is the number of top candidates to return
+
+#### MinIO Integration
+The docker-compose.yml assumes that:
+- A MinIO server is running externally (e.g., on the long-term-storage_default network). Change network settings in docker compose file if needed.
+- The required bucket and folders already exist in MinIO
+
 
 ## How to run it in a Local Setting
 There are three different processes that need to be performed separately to perform data discovery: creating the profiles, computing distances and executing the predictive model. We will overview each of these steps in the next sections. Bear in mind that these steps need to be repeated for each benchmark that we want to perform data discovery on.
