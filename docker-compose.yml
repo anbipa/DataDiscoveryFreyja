@@ -1,0 +1,33 @@
+version: '3.9'
+
+services:
+  profile_prepro:
+    build:
+      context: ./profile_prepro
+    container_name: profile_prepro
+    environment:
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin123
+      MINIO_BUCKET: data-based-data-discovery
+    networks:
+      - shared_net
+    entrypoint: ["/app/profile_pipeline_minio.sh"]
+
+  modelling:
+    build:
+      context: ./modelling
+    container_name: ranking_model
+    environment:
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin123
+      MINIO_BUCKET: data-based-data-discovery
+    networks:
+      - shared_net
+    entrypoint: ["python", "get_ranking_minio.py"]
+    # You will override these args manually when running
+
+networks:
+  shared_net:
+    external: true

@@ -12,10 +12,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Step 5: Copy your Python script and model into the container
 COPY get_ranking.py /app/get_ranking.py
+COPY get_ranking_minio.py /app/get_ranking_minio.py
 COPY predictive_model.pkl /app/predictive_model.pkl
 
 # Step 6: Set the entrypoint to run the Python script
-ENTRYPOINT ["python", "get_ranking.py"]
-
-# Step 7: (Optional) Allow passing command-line arguments to the script (e.g., via CMD)
-CMD ["--help"]
+ENTRYPOINT ["python", "get_ranking_minio.py"]

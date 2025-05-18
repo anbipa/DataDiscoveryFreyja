@@ -24,12 +24,16 @@ WORKDIR /app
 # Copy the built JAR and shell script from the builder stage
 COPY --from=builder /app/build/libs/app-all.jar ./DataDiscovery-all.jar
 COPY profile_pipeline.sh .
+COPY profile_pipeline_minio.sh .
 
 # Give execute permissions to the script
 RUN chmod +x profile_pipeline.sh
+RUN chmod +x profile_pipeline_minio.sh
 
-# Define mountable volumes (optional)
-VOLUME ["/benchmark", "/ground_truths", "/output", "/profiles"]
+
+RUN apt-get update && apt-get install -y wget && \
+    wget https://dl.min.io/client/mc/release/linux-amd64/mc -O /usr/bin/mc && \
+    chmod +x /usr/bin/mc
 
 # Set default command to run the pipeline
-CMD ["./profile_pipeline.sh"]
+CMD ["./profile_pipeline_minio.sh"]

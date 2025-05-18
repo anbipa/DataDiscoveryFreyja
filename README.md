@@ -72,13 +72,22 @@ To run the Docker image, use the following command:
 ```
 docker run --rm \
   -v /Users/anbipa/Desktop/DTIM/Cyclops/datalake:/benchmark \
-  -v /Users/anbipa/Desktop/DTIM/Cyclops/DataDiscovery/ground_truths:/ground_truths \
   -v /Users/anbipa/Desktop/DTIM/Cyclops/output:/output \
   profiles_prepro
 ```
 You can download the benchmark data lake example [here](https://mydisk.cs.upc.edu/s/QHJbKcyeacxq35f)
 
-This command mounts the benchmark, ground_truths, and output directories from your local machine to the Docker container. The --rm flag ensures that the container is removed after it exits.
+This command mounts the benchmark, and output directories from your local machine to the Docker container. The --rm flag ensures that the container is removed after it exits.
+
+If a MinIO server is running, you can also run the Docker image with the following command:
+```
+docker run --rm \
+  --network long-term-storage_default \
+  profiles_prepro
+```
+This command connects the Docker container to the MinIO server's network, allowing it to access the LTS. There must be a benchmark folder in the Data-based-data-discovery bucket in the MinIO server. The folder must contain the CSV files to be processed.
+
+
 ### Modelling
 
 #### Docker build
@@ -95,6 +104,16 @@ docker run --rm \
   -v /Users/anbipa/Desktop/DTIM/Cyclops/DataDiscovery/modelling/predictive_model.pkl:/app/predictive_model.pkl \
   modelling /app/distances/ gender_development.csv Country 20
 
+```
+
+If a MinIO server is running, you can also run the Docker image with the following command:
+```
+docker run --rm \                               
+  --network long-term-storage_default \
+  -e MINIO_ENDPOINT=http://minio:9000 \
+  -e MINIO_ACCESS_KEY=minioadmin \
+  -e MINIO_SECRET_KEY=minioadmin123 \
+  modelling world_country.csv Code 10
 ```
 
 ## How to run it in a Local Setting
