@@ -1,22 +1,38 @@
 stages:
   - build
+  - deploy
+
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+  IMAGE_REGISTRY: registry.gitlab.com/cyclops4100006/datadiscovery
+
+before_script:
+  - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+
 
 # Build module 1
-build_module1:
+build_modules:
   stage: build
   script:
-    - docker build --no-cache -t profiles_prepro ./profile_prepro
+    - docker compose build --no-cache
+    - docker push $IMAGE_REGISTRY/profile_prepro
+    - docker push $IMAGE_REGISTRY/modelling
   tags:
     - docker
   only:
     - main
 
-# Build module 2
-build_module2:
-  stage: build
+deploy_module2:
+  stage: deploy
   script:
-    - docker build -t modelling ./modelling
+    - echo "Deploying module 2"
+    - docker compose pull modelling
+    - docker compose up -d modelling
+    - docker ps
   tags:
     - docker
   only:
     - main
+  needs:
+    - build_modules
