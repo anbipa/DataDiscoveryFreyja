@@ -1,16 +1,26 @@
 #!/bin/bash
 
+# Use environment variables (fallbacks can be provided if needed)
+MINIO_ALIAS="minio"
+MINIO_URL="${MINIO_ENDPOINT:-http://minio:9000}"
+MINIO_ACCESS="${MINIO_ACCESS_KEY:-minioadmin}"
+MINIO_SECRET="${MINIO_SECRET_KEY:-minioadmin123}"
+
+# --- Bucket & folder names from environment (with defaults) ---
+MINIO_BUCKET="${MINIO_BUCKET:-data-based-data-discovery}"
+MINIO_FOLDER_BENCHMARK="${MINIO_FOLDER_BENCHMARK:-benchmark}"
+
 # Define temp directories
 temp_dir="/tmp/preprocessing"
 mkdir -p "$temp_dir/benchmark" "$temp_dir/profiles" "$temp_dir/output"
 
 # MinIO alias config
-mc alias set minio http://minio:9000 minioadmin minioadmin123
+mc alias set "$MINIO_ALIAS" "$MINIO_URL" "$MINIO_ACCESS" "$MINIO_SECRET"
 
 # Download benchmark CSVs from MinIO
-mc ls minio/data-based-data-discovery/benchmark/ | awk '{print $NF}' | while read -r filename; do
+mc ls "$MINIO_ALIAS/$MINIO_BUCKET/$MINIO_FOLDER_BENCHMARK/" | awk '{print $NF}' | while read -r filename; do
     echo "Downloading $filename from MinIO"
-    mc cp "minio/data-based-data-discovery/benchmark/$filename" "$temp_dir/benchmark/"
+    mc cp "$MINIO_ALIAS/$MINIO_BUCKET/$MINIO_FOLDER_BENCHMARK/$filename" "$temp_dir/benchmark/"
 done
 
 # Set internal directories to local temp
@@ -73,13 +83,13 @@ for query_file in "$directory_store_profiles"/*.csv; do
     done < "$query_file"
 done
 
-mc mb minio/data-based-data-discovery/profiles
-mc mb minio/data-based-data-discovery/distances
+mc mb "$MINIO_ALIAS/$MINIO_BUCKET/profiles"
+mc mb "$MINIO_ALIAS/$MINIO_BUCKET/distances"
 
 
 # Upload profiles and distances back to MinIO
-mc cp "$directory_store_profiles"/*.csv minio/data-based-data-discovery/profiles/
-mc cp "$directory_store_distances"/distances/*.csv minio/data-based-data-discovery/distances/
+mc cp "$directory_store_profiles"/*.csv "$MINIO_ALIAS/$MINIO_BUCKET/profiles/"
+mc cp "$directory_store_distances"/distances/*.csv "$MINIO_ALIAS/$MINIO_BUCKET/distances/"
 
 
 

@@ -10,6 +10,7 @@ If a MinIO server is running, the following environment variables need to be set
 - **MINIO_ACCESS_KEY**: The access key for the MinIO server (e.g., `minioadmin`).
 - **MINIO_SECRET_KEY**: The secret key for the MinIO server (e.g., `minioadmin123`).
 - **MINIO_BUCKET**: The name of the bucket to be used (e.g., `data-based-data-discovery`).
+- **MINIO_FOLDER_BENCHMARK**: The folder within the bucket where benchmark data is stored (e.g., `benchmark`).
 
 ### Volumes & Persistent Storage
 This tool supports two modes of file access:
@@ -61,7 +62,8 @@ CPU usage is high, but can increase/decrease depending on the benchmark size.
 ├── README.md
 ├── .gitattributes
 ├── Notebook - ML models.ipynb
-└── .gitignore
+├── .gitignore
+└── ...
 ```
 
 ## How to run DataDiscovery through Docker
@@ -70,7 +72,7 @@ CPU usage is high, but can increase/decrease depending on the benchmark size.
 #### Docker build
 To build the Docker image, run the following command in the root directory of the project:
 ```
-docker build --no-cache -t profiles_prepro ./profile_prepro
+docker build --no-cache -t profile_prepro ./profile_prepro
 ```
 #### Docker run
 To run the Docker image, use the following command:
@@ -88,7 +90,12 @@ If a MinIO server is running, you can also run the Docker image with the followi
 ```
 docker run --rm \
   --network long-term-storage_default \
-  profiles_prepro
+  -e MINIO_ENDPOINT=http://minio:9000 \
+  -e MINIO_ACCESS_KEY=minioadmin \
+  -e MINIO_SECRET_KEY=minioadmin123 \
+  -e MINIO_BUCKET=data-based-data-discovery \
+  -e MINIO_FOLDER_BENCHMARK=benchmark \
+  profile_prepro
 ```
 This command connects the Docker container to the MinIO server's network, allowing it to access the LTS. There must be a benchmark folder in the Data-based-data-discovery bucket in the MinIO server. The folder must contain the CSV files to be processed.
 
@@ -118,12 +125,13 @@ docker run --rm \
   -e MINIO_ENDPOINT=http://minio:9000 \
   -e MINIO_ACCESS_KEY=minioadmin \
   -e MINIO_SECRET_KEY=minioadmin123 \
+  -e MINIO_BUCKET=data-based-data-discovery \
   modelling world_country.csv Code 10
 ```
 
 ### Docker Compose (Preprocessing + Modelling)
 
-You can also use Docker Compose to simplify building and running both modules: profile_prepro and modelling.
+You can also use Docker Compose to simplify building and running both modules: profiles_prepro and modelling.
 
 #### Build All Services
 
@@ -135,15 +143,27 @@ docker compose build
 #### Run profile_prepro
 To execute the preprocessing pipeline (which creates data profiles and computes distances):
 ```bash
-docker compose run --rm profile_prepro
+docker compose run --rm \                              
+  -e MINIO_ENDPOINT=http://minio:9200 \
+  -e MINIO_ACCESS_KEY=minioadmin \
+  -e MINIO_SECRET_KEY=minioadmin123 \
+  -e MINIO_BUCKET=data-based-data-discovery \
+  -e MINIO_FOLDER_BENCHMARK=datalake \
+  profile_prepro
+
 ```
-This service is configured to fetch data from a MinIO bucket (e.g., data-based-data-discovery/benchmark) if environment variables are set and MinIO is reachable via the Docker network.
+This service is configured to fetch data from a MinIO bucket (e.g., data-based-data-discovery/datalake) if environment variables are set and MinIO is reachable via the Docker network.
 
 #### Run modelling (with arguments)
 To generate a joinability ranking using the predictive model:
 
 ```bash
-docker compose run --rm modelling world_country.csv Code 10
+docker compose run --rm \
+  -e MINIO_ENDPOINT=http://minio:9200 \
+  -e MINIO_ACCESS_KEY=minioadmin \
+  -e MINIO_SECRET_KEY=minioadmin123 \
+  -e MINIO_BUCKET=data-based-data-discovery \
+  modelling world_country.csv Code 10
 ```
 Here:
 - world_country.csv is the name of the query dataset (must match a profile/distances file)

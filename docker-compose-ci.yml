@@ -1,5 +1,6 @@
 services:
   profile_prepro:
+    image: registry.gitlab.com/cyclops4100006/datadiscovery/profile_prepro:latest
     build:
       context: ./profile_prepro
     container_name: profile_prepro
@@ -13,6 +14,7 @@ services:
     entrypoint: ["/app/profile_pipeline_minio.sh"]
 
   modelling:
+    image: registry.gitlab.com/cyclops4100006/datadiscovery/modelling:latest
     build:
       context: ./modelling
     container_name: ranking_model
