@@ -1,4 +1,4 @@
-# DataDiscovery componoent
+# DataDiscovery component
  
 ## Introduction
 This is a tool used to perform data discovery in large-scale environments such as data lakes. The goal of this project is to provide an easy-to-use and lightweight approach for data discovery, that considerably reduces the time requirements of data discovery tasks whilst keeping a high accuracy in the detection of relevant data.
