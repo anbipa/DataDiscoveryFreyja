@@ -33,7 +33,13 @@ def get_ranking(s3, bucket, distances_prefix, dataset, attribute, k, model):
     attribute_names = distances["attribute_name_2"]
 
     distances = prepare_data_for_model(distances, model)
-    distances["predictions"] = model.predict(distances)
+    #distances["predictions"] = model.predict(distances)
+    preds = model.predict(distances)
+    if preds.max() == 0:
+      distances["predictions"] = 0.0
+    else:
+      distances["predictions"] = preds / preds.max()
+
     distances["target_ds"] = dataset_names
     distances["target_attr"] = attribute_names
 
@@ -44,10 +50,13 @@ def get_ranking(s3, bucket, distances_prefix, dataset, attribute, k, model):
 
     top_k_joins = distances.sort_values(by="predictions", ascending=False).head(k)
     print("Top-K Results:")
+    top_k_joins = top_k_joins.reset_index(drop=True)
+    top_k_joins.index += 1  # Make index start at 1
     print(top_k_joins[["predictions", "target_ds", "target_attr"]])
 
 
-    # (Optional) Upload results back to MinIO
+
+# (Optional) Upload results back to MinIO
     #result_path = os.path.join(tmpdir, f"ranking_{dataset}_{attribute}.csv")
     #top_k_joins.to_csv(result_path, index=False)
 

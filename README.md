@@ -143,14 +143,13 @@ docker compose build
 #### Run profile_prepro
 To execute the preprocessing pipeline (which creates data profiles and computes distances):
 ```bash
-docker compose run --rm \                              
+docker compose run --rm \
   -e MINIO_ENDPOINT=http://minio:9200 \
   -e MINIO_ACCESS_KEY=minioadmin \
   -e MINIO_SECRET_KEY=minioadmin123 \
   -e MINIO_BUCKET=data-based-data-discovery \
   -e MINIO_FOLDER_BENCHMARK=datalake \
   profile_prepro
-
 ```
 This service is configured to fetch data from a MinIO bucket (e.g., data-based-data-discovery/datalake) if environment variables are set and MinIO is reachable via the Docker network.
 
