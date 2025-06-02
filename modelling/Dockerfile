@@ -16,6 +16,6 @@ COPY get_ranking_minio.py /app/get_ranking_minio.py
 COPY predictive_model.pkl /app/predictive_model.pkl
 COPY main.py /app/main.py
 
-EXPOSE 8000
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+EXPOSE 7000
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7000"]
 
