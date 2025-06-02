@@ -14,6 +14,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY get_ranking.py /app/get_ranking.py
 COPY get_ranking_minio.py /app/get_ranking_minio.py
 COPY predictive_model.pkl /app/predictive_model.pkl
+COPY main.py /app/main.py
 
-# Step 6: Set the entrypoint to run the Python script
-ENTRYPOINT ["python", "get_ranking_minio.py"]
+EXPOSE 8000
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+

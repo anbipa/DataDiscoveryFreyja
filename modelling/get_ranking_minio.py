@@ -52,7 +52,7 @@ def get_ranking(s3, bucket, distances_prefix, dataset, attribute, k, model):
     print("Top-K Results:")
     top_k_joins = top_k_joins.reset_index(drop=True)
     top_k_joins.index += 1  # Make index start at 1
-    print(top_k_joins[["predictions", "target_ds", "target_attr"]])
+    return top_k_joins[["predictions", "target_ds", "target_attr"]]
 
 
 
