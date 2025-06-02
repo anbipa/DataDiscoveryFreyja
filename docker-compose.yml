@@ -23,9 +23,9 @@ services:
       MINIO_BUCKET: data-based-data-discovery
     networks:
       - shared_net
-    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7000"]
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5100"]
     ports:
-        - "7000:7000"
+        - "5100:5100"
 
 networks:
   shared_net:
