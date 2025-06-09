@@ -24,10 +24,31 @@ build_modules:
     - main
     - cyclops-integration
 
-deploy_module2:
+deploy_profile_prepro:
   stage: deploy
   script:
-    - echo "Deploying module 2"
+    - echo "Running profile_prepro module"
+    - docker compose -f docker-compose-ci.yml pull profile_prepro
+    - docker compose -f docker-compose-ci.yml run --rm \
+      -e MINIO_ENDPOINT=http://minio:9200 \
+      -e MINIO_ACCESS_KEY=minioadmin \
+      -e MINIO_SECRET_KEY=minioadmin123 \
+      -e MINIO_BUCKET=data-based-data-discovery \
+      -e MINIO_FOLDER_BENCHMARK=datalake \
+      profile_prepro
+    - docker ps
+  tags:
+    - docker
+  only:
+    - main
+    - cyclops-integration
+  needs:
+    - build_modules
+
+deploy_modelling:
+  stage: deploy
+  script:
+    - echo "Deploying modelling module"
     - docker compose -f docker-compose-ci.yml pull modelling
     - docker compose -f docker-compose-ci.yml up -d modelling
     - docker ps
@@ -37,4 +58,4 @@ deploy_module2:
     - main
     - cyclops-integration
   needs:
-    - build_modules
+    - deploy_profile_prepro
