@@ -31,5 +31,5 @@ services:
 
 networks:
   shared_net:
-    #external: true
-    #name: long-term-storage_default
+    external: true
+    name: long-term-storage_default
