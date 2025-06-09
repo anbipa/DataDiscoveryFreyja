@@ -11,7 +11,6 @@ before_script:
   - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
 
 
-# Build module 1
 build_modules:
   stage: build
   script:
@@ -24,20 +23,20 @@ build_modules:
     - main
     - cyclops-integration
 
-deploy_profile_prepro:
-  stage: deploy
-  script:
-    - echo "Running profile_prepro module"
-    - docker compose -f docker-compose-ci.yml pull profile_prepro
-    - docker compose -f docker-compose-ci.yml run --rm -e MINIO_ENDPOINT=http://minio:9000 -e MINIO_ACCESS_KEY=minioadmin -e MINIO_SECRET_KEY=minioadmin123 -e MINIO_BUCKET=data-based-data-discovery -e MINIO_FOLDER_BENCHMARK=datalake profile_prepro
-    - docker ps
-  tags:
-    - docker
-  only:
-    - main
-    - cyclops-integration
-  needs:
-    - build_modules
+#deploy_profile_prepro:
+#  stage: deploy
+#  script:
+#    - echo "Running profile_prepro module"
+#    - docker compose -f docker-compose-ci.yml pull profile_prepro
+#    - docker compose -f docker-compose-ci.yml run --rm -e MINIO_ENDPOINT=http://minio:9000 -e MINIO_ACCESS_KEY=minioadmin -e MINIO_SECRET_KEY=minioadmin123 -e MINIO_BUCKET=data-based-data-discovery -e MINIO_FOLDER_BENCHMARK=datalake profile_prepro
+#    - docker ps
+#  tags:
+#    - docker
+#  only:
+#    - main
+#    - cyclops-integration
+#  needs:
+#    - build_modules
 
 
 deploy_modelling:
@@ -45,7 +44,7 @@ deploy_modelling:
   script:
     - echo "Deploying modelling module"
     - docker compose -f docker-compose-ci.yml pull modelling
-    - docker compose -f docker-compose-ci.yml up -d modelling
+    - docker compose -f docker-compose-ci.yml up -e MINIO_ENDPOINT=http://minio:9000 -e MINIO_ACCESS_KEY=minioadmin -e MINIO_SECRET_KEY=minioadmin123 -e MINIO_BUCKET=data-based-data-discovery -d modelling
     - docker ps
   tags:
     - docker
@@ -53,4 +52,4 @@ deploy_modelling:
     - main
     - cyclops-integration
   needs:
-    - deploy_profile_prepro
+    - build_modules #- deploy_profile_prepro
