@@ -19,7 +19,7 @@ services:
       context: ./modelling
     container_name: ranking_model
     environment:
-      MINIO_ENDPOINT: http://minio:9200
+      MINIO_ENDPOINT: http://minio:9000
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin123
       MINIO_BUCKET: data-based-data-discovery

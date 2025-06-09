@@ -44,7 +44,7 @@ deploy_modelling:
   script:
     - echo "Deploying modelling module"
     - docker compose -f docker-compose-ci.yml pull modelling
-    - docker compose -f docker-compose-ci.yml up -e MINIO_ENDPOINT=http://minio:9000 -e MINIO_ACCESS_KEY=minioadmin -e MINIO_SECRET_KEY=minioadmin123 -e MINIO_BUCKET=data-based-data-discovery -d modelling
+    - docker compose -f docker-compose-ci.yml up -d modelling
     - docker ps
   tags:
     - docker
