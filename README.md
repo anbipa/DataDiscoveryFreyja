@@ -13,19 +13,11 @@ If a MinIO server is running, the following environment variables need to be set
 - **MINIO_FOLDER_BENCHMARK**: The folder within the bucket where benchmark data is stored (e.g., `benchmark`).
 
 ### Volumes & Persistent Storage
-This tool supports two modes of file access:
-(1) local volumes using Docker bind mounts, and
-(2) external storage access via MinIO (LTS).
-#### Option 1: Using Docker Volumes (Local)
-The tool uses docker [bind mounts](https://docs.docker.com/engine/storage/bind-mounts/) to allow users to provide their input files and access outputs.
-- **Input Volumes**:
-  1. The benchmark input volume is mounted to the container's `/app/benchmark` directory. Users can place their input files in this directory.
-- **Output Volume**: The output volume is mounted to the container's `/app/outputs` directory. The application will save its output files in this directory.
-#### Option 2: Using MinIO (LTS Integration)
-The tool also supports integration with Cyclops' Long-Term Storage (LTS) via a MinIO-compatible API. This mode does not require local mounts and supports fully remote workflows.
+The tool supports integration with Cyclops' Long-Term Storage (LTS) via a MinIO-compatible API. This mode does not require local mounts and supports fully remote workflows.
 
 ### Network Configuration
-- In MinIO mode, the container must be connected to the Docker network that includes the MinIO instance (e.g., long-term-storage_default).
+- The joinable ranking prediction service (modelling) listents on port 5100 for API requests.
+- Regarding MinIO integration, the container must be connected to the Docker network that includes the MinIO instance (e.g., long-term-storage_default).
 
 
 ## Infrastructure Setup & Resource Allocation
@@ -34,9 +26,9 @@ CPU usage is high, but can increase/decrease depending on the benchmark size.
 
 ### Storage Considerations
 - Disk space:
-    - Base image size: ~ 350 MB
+    - Base images size: ~ 500 MiB
 ### External Service Dependencies
-- Future: LTS and IKB services for data retrieval and annotation.
+- LTS (Done) and IKB (In Progress) services for data retrieval and annotation.
 
 ### Service Scaling & Load
 - The application is designed to run on a single instance. However, the component is stateless and can be horizontally scaled where applicable (e.g., for several benchmarks).
@@ -110,7 +102,7 @@ docker compose run --rm \
 Then you can make a request to the API to get a ranking. For example, using `curl`:
 
 ```bash
-curl "http://localhost:8000/ranking?dataset=world_country.csv&attribute=Code&k=10"
+curl "http://localhost:5100/ranking?dataset=world_country.csv&attribute=Code&k=10"
 ```
 Here:
 - world_country.csv is the name of the query dataset (must match a profile/distances file)
